@@ -42,11 +42,11 @@ RUN powershell -Command \
 # $ProgressPreference: https://github.com/PowerShell/PowerShell/issues/2138#issuecomment-251261324
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-RUN $url = 'https://static.rust-lang.org/rustup/archive/1.5.0/x86_64-pc-windows-msvc/rustup-init.exe'; \
+RUN $url = 'https://static.rust-lang.org/rustup/archive/1.15.0/x86_64-pc-windows-msvc/rustup-init.exe'; \
     Write-Host ('Downloading {0} ...' -f $url); \
     Invoke-WebRequest -Uri $url -OutFile 'rustup-init.exe'; \
     \
-    $sha256 = '7500b705855c4f8e70e222ad1192bb46de15629f73a6459a98c9fd4bd06136bc'; \
+    $sha256 = '155E431C357B1E612B7C91B5802CC9278CBAA776C76AD3591C7DD0B333643FC2'; \
     Write-Host ('Verifying sha256 ({0}) ...' -f $sha256); \
     if ((Get-FileHash rustup-init.exe -Algorithm sha256).Hash -ne $sha256) { \
        Write-Host 'FAILED!'; \
