@@ -38,7 +38,8 @@ RUN ["powershell", "-Command", "`
 # $ProgressPreference: https://github.com/PowerShell/PowerShell/issues/2138#issuecomment-251261324
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-RUN $url = 'https://static.rust-lang.org/rustup/archive/1.15.0/x86_64-pc-windows-msvc/rustup-init.exe'; `
+RUN [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12; `
+    $url = 'https://static.rust-lang.org/rustup/archive/1.15.0/x86_64-pc-windows-msvc/rustup-init.exe'; `
     Write-Host ('Downloading {0} ...' -f $url); `
     Invoke-WebRequest -Uri $url -OutFile 'rustup-init.exe'; `
     `
