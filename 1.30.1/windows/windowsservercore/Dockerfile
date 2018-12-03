@@ -1,13 +1,13 @@
 # escape=`
 
-FROM microsoft/windowsservercore
+FROM mcr.microsoft.com/windows/servercore:1809
 
 ENV RUSTUP_HOME=C:\rustup `
     CARGO_HOME=C:\cargo
 
-RUN ["powershell", "-Command", "`
-    $ErrorActionPreference = 'Stop'; `
-    $url = 'https://download.visualstudio.microsoft.com/download/pr/10930955/e64d79b40219aea618ce2fe10ebd5f0d/vs_BuildTools.exe'; `
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+RUN $url = 'https://download.visualstudio.microsoft.com/download/pr/10930955/e64d79b40219aea618ce2fe10ebd5f0d/vs_BuildTools.exe'; `
     $sha256 = '68A678D64704A4592CA003494B9C128EE5D2B381672DE174BAF9811E2A84EE72'; `
     Invoke-WebRequest -Uri $url -OutFile vs_BuildTools.exe; `
     $actual256 = (Get-FileHash vs_BuildTools.exe -Algorithm sha256).Hash; `
@@ -17,16 +17,9 @@ RUN ["powershell", "-Command", "`
        Write-Host ('got:      {0}' -f $actual256); `
        exit 1; `
     }; `
-    Install-WindowsFeature NET-Framework-45-Core"]
+    Install-WindowsFeature NET-Framework-45-Core
 
-RUN [".\\vs_BuildTools.exe", `
-        "--quiet", `
-        "--norestart", `
-        "--locale", "en-US", `
-        "--add", "Microsoft.VisualStudio.Workload.VCTools", `
-        "--includeOptional", `
-        "--includeRecommended" `
-    ]
+RUN Start-Process -filepath C:\vs_buildtools.exe -passthru -wait -argumentlist '--add Microsoft.VisualStudio.Workload.NetCoreBuildTools --add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Workload.WebBuildTools --quiet --nocache --wait'
 
 RUN ["powershell", "-Command", "`
     $ErrorActionPreference = 'Stop'; `
@@ -34,8 +27,7 @@ RUN ["powershell", "-Command", "`
     Remove-Item .\\vs_BuildTools.exe; `
     Remove-Item -Force -Recurse 'C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer'"]
 
-
-# $ProgressPreference: https://github.com/PowerShell/PowerShell/issues/2138#issuecomment-251261324
+# # $ProgressPreference: https://github.com/PowerShell/PowerShell/issues/2138#issuecomment-251261324
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 RUN [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12; `
