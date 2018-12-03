@@ -16,10 +16,10 @@ RUN $url = 'https://download.visualstudio.microsoft.com/download/pr/10930955/e64
        Write-Host ('expected: {0}' -f $sha256); `
        Write-Host ('got:      {0}' -f $actual256); `
        exit 1; `
-    }; `
-    Install-WindowsFeature NET-Framework-45-Core
+    };    
 
-RUN Start-Process -filepath C:\vs_buildtools.exe -passthru -wait -argumentlist '--add Microsoft.VisualStudio.Workload.NetCoreBuildTools --add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Workload.WebBuildTools --quiet --nocache --wait'
+RUN Start-Process -filepath C:\vs_buildtools.exe -passthru -wait -argumentlist `
+    '--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --quiet --nocache --wait'
 
 RUN ["powershell", "-Command", "`
     $ErrorActionPreference = 'Stop'; `
