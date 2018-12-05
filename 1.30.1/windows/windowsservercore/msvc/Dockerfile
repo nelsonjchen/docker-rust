@@ -1,15 +1,35 @@
 # escape=`
 
-FROM mcr.microsoft.com/windows/servercore:1809
+# IMAGES BUILT FROM THIS DOCKERFILE ARE NOT TO BE SHARED ON PUBLIC DOCKER HUBs.
+# 
+# WARNING: NON-FREE AND DISTRIBUTION RESTRICTED ENCUMBERED SOFTWARE IN IMAGE.
+#
+# The VS Build Tools are very encumbered.
+#
+# IMAGE SHOULD ONLY BE BUILT BY USERS WHO CAN FOLLOW THESE TERMS:
+# https://visualstudio.microsoft.com/license-terms/mlt553512/
+#
+# See the fourth paragraph of this blog post for a warning from a Microsoftie:
+# https://blogs.msdn.microsoft.com/vcblog/2018/08/13/using-msvc-in-a-docker-container-for-your-c-projects/
+# 
+# """
+# The VS Build Tools are licensed as a supplement to your existing Visual Studio license. 
+# Any images built with these tools should be for your personal use or for use in your 
+# organization in accordance with your existing Visual Studio and Windows licenses. 
+# Please don’t share these images on a public Docker hub.
+# """
+#
+# That said, this Dockerfile will be built in a CI system for validation and testing in the project 
+# but most definitely will skip deployment.
 
-ENV RUSTUP_HOME=C:\rustup `
-    CARGO_HOME=C:\cargo
+# Usually defaults to LTSC 2016
+FROM microsoft/windowsservercore:latest
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 RUN $url = 'https://download.visualstudio.microsoft.com/download/pr/10930955/e64d79b40219aea618ce2fe10ebd5f0d/vs_BuildTools.exe'; `
     $sha256 = '68A678D64704A4592CA003494B9C128EE5D2B381672DE174BAF9811E2A84EE72'; `
-    Invoke-WebRequest -Uri $url -OutFile vs_BuildTools.exe; `
+    Invoke-WebRequest -Uri $url -OutFile C:\vs_BuildTools.exe; `
     $actual256 = (Get-FileHash vs_BuildTools.exe -Algorithm sha256).Hash; `
     if ($actual256 -ne $sha256) { `
        Write-Host 'FAILED!'; `
@@ -19,16 +39,13 @@ RUN $url = 'https://download.visualstudio.microsoft.com/download/pr/10930955/e64
     };    
 
 RUN Start-Process -filepath C:\vs_buildtools.exe -passthru -wait -argumentlist `
-    '--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --quiet --nocache --wait'
+    '--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --quiet --nocache --wait'; `
+    Remove-Item C:\vs_BuildTools.exe; `
+    Remove-Item -Force -Recurse 'C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer'
 
-RUN ["powershell", "-Command", "`
-    $ErrorActionPreference = 'Stop'; `
-    Write-Host 'done'; `
-    Remove-Item .\\vs_BuildTools.exe; `
-    Remove-Item -Force -Recurse 'C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer'"]
-
-# # $ProgressPreference: https://github.com/PowerShell/PowerShell/issues/2138#issuecomment-251261324
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+ENV RUSTUP_HOME=C:\rustup `
+    CARGO_HOME=C:\cargo `
+    RUST_VERSION=1.30.1
 
 RUN [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12; `
     $url = 'https://static.rust-lang.org/rustup/archive/1.15.0/x86_64-pc-windows-msvc/rustup-init.exe'; `
