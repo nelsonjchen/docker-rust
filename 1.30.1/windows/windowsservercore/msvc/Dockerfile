@@ -22,7 +22,6 @@
 # That said, this Dockerfile will be built in a CI system for validation and testing in the project 
 # but most definitely will skip deployment.
 
-# Usually defaults to LTSC 2016
 FROM microsoft/windowsservercore:latest
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
@@ -65,5 +64,5 @@ RUN [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::Sec
     Write-Host ('Updating PATH: {0}' -f $newPath); `
     [Environment]::SetEnvironmentVariable('PATH', $newPath, [EnvironmentVariableTarget]::Machine); `
     `
-    C:\rustup-init.exe -y --no-modify-path --default-toolchain 1.19.0; `
+    C:\rustup-init.exe -y --no-modify-path --default-toolchain ${RUST_VERSION} --default-host x86_64-pc-windows-msvc; `
     Remove-Item C:\rustup-init.exe
