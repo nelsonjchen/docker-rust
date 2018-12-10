@@ -26,4 +26,4 @@ after_build:
   - ps: docker images
 
 test_script:
-  - ps: docker run --rm rust cargo install --example toml2json toml --vers 0.4.4
+  - cmd: docker run --rm rust cargo install --example toml2json toml --vers 0.4.4
