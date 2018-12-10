@@ -2,10 +2,22 @@ image: Visual Studio 2017
 
 environment:
   matrix:
-    - version: 1.19.0
-      variant: nanoserver
-    - version: 1.19.0
-      variant: windowsservercore
+    - version: 1.30.1
+      variant: ltsc2019/gnu
+    - version: 1.30.1
+      variant: 1803/gnu
+    - version: 1.30.1
+      variant: 1709/gnu
+    - version: 1.30.1
+      variant: ltsc2016/gnu
+    - version: 1.30.1
+      variant: ltsc2019/msvc
+    - version: 1.30.1
+      variant: 1803/msvc
+    - version: 1.30.1
+      variant: 1709/msvc
+    - version: 1.30.1
+      variant: ltsc2016/msvc
 
 build_script:
   - cmd: appveyor-retry docker build --pull -t rust %version%/windows/%variant%

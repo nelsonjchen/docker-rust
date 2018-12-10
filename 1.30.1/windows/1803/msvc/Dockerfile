@@ -22,7 +22,7 @@
 # That said, this Dockerfile will be built in a CI system for validation and testing in the project 
 # but most definitely will skip deployment.
 
-FROM microsoft/windowsservercore:latest
+FROM mcr.microsoft.com/windows/servercore:1803
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
@@ -47,11 +47,11 @@ ENV RUSTUP_HOME=C:\rustup `
     RUST_VERSION=1.30.1
 
 RUN [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12; `
-    $url = 'https://static.rust-lang.org/rustup/archive/1.15.0/x86_64-pc-windows-msvc/rustup-init.exe'; `
+    $url = 'https://static.rust-lang.org/rustup/archive/1.14.0/x86_64-pc-windows-msvc/rustup-init.exe'; `
     Write-Host ('Downloading {0} ...' -f $url); `
     Invoke-WebRequest -Uri $url -OutFile 'rustup-init.exe'; `
     `
-    $sha256 = '155E431C357B1E612B7C91B5802CC9278CBAA776C76AD3591C7DD0B333643FC2'; `
+    $sha256 = 'c5cd27bbb48b2f6190b32d5524c4e89b2ecab8aa5cfd66085c24e40cc55f6a31'; `
     Write-Host ('Verifying sha256 ({0}) ...' -f $sha256); `
     if ((Get-FileHash rustup-init.exe -Algorithm sha256).Hash -ne $sha256) { `
        Write-Host 'FAILED!'; `

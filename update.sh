@@ -54,15 +54,18 @@ for version in "${versions[@]}"; do
 
     windowsSha256="$(curl -fsSL "https://static.rust-lang.org/rustup/archive/${rustupVersion}/x86_64-pc-windows-msvc/rustup-init.exe.sha256" | awk '{ print $1 }')"
 
-    for winVariant in windowsservercore nanoserver; do
-	if [ -d "$version/windows/$winVariant" ]; then
-	    sed -r \
-                -e 's!%%RUST-VERSION%%!'"$version"'!g' \
-                -e 's!%%RUSTUP-VERSION%%!'"$rustupVersion"'!g' \
-		-e 's!%%WIN-SHA256%%!'"$windowsSha256"'!g' \
-		"Dockerfile-windows-$winVariant.template" > "$version/windows/$winVariant/Dockerfile"
-	    appveyorEnv='\n    - version: '"$version"'\n      variant: '"$winVariant$appveyorEnv"
-	fi
+    for winTargetVariant in msvc gnu; do
+        for winVariant in ltsc2016 1709 1803 ltsc2019 ; do
+            if [ -d "$version/windows/$winVariant/$winTargetVariant" ]; then
+                sed -r \
+                    -e 's!%%RUST-VERSION%%!'"$version"'!g' \
+                    -e 's!%%RUSTUP-VERSION%%!'"$rustupVersion"'!g' \
+                    -e 's!%%WIN-VARIANT%%!'"$winVariant"'!g' \
+                    -e 's!%%WIN-SHA256%%!'"$windowsSha256"'!g' \
+                "Dockerfile-windows-$winTargetVariant.template" > "$version/windows/$winVariant/$winTargetVariant/Dockerfile"
+                appveyorEnv='\n    - version: '"$version"'\n      variant: '"$winVariant/$winTargetVariant$appveyorEnv"
+            fi
+        done    
     done
 done
 
