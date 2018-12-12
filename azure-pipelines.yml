@@ -6,10 +6,24 @@ jobs:
   - script: docker build --pull -t rust 1.31.0/windows/windowsservercore-ltsc2016-gnu
   - script: docker images
   - script: docker run --rm rust cargo install --example toml2json toml --vers 0.4.4
+- job: windowsservercore_ltsc2016_msvc
+  pool:
+    vmImage: 'vs2017-win2016'
+  steps:
+  - script: docker build --pull -t rust 1.31.0/windows/windowsservercore-ltsc2016-msvc
+  - script: docker images
+  - script: docker run --rm rust cargo install --example toml2json toml --vers 0.4.4
 - job: windowsservercore_1803_gnu
   pool:
     vmImage: 'win1803'
   steps:
   - script: docker build --pull -t rust 1.31.0/windows/windowsservercore-1803-gnu
+  - script: docker images
+  - script: docker run --rm rust cargo install --example toml2json toml --vers 0.4.4
+- job: windowsservercore_1803_msvc
+  pool:
+    vmImage: 'win1803'
+  steps:
+  - script: docker build --pull -t rust 1.31.0/windows/windowsservercore-1803-msvc
   - script: docker images
   - script: docker run --rm rust cargo install --example toml2json toml --vers 0.4.4
