@@ -1,0 +1,8 @@
+jobs:
+- job: windowsservercore_ltsc2016_gnu
+  pool:
+    vmImage: 'vs2017-win2016'
+  steps:
+  - script: docker build --pull -t rust 1.31.0/windows/windowsservercore-ltsc2016-gnu
+  - script: docker images
+  - script: docker run --rm rust cargo install --example toml2json toml --vers 0.4.4
